@@ -1,11 +1,14 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as path from "path";
+import * as fs from "fs";
 import { setLeetCodeSession } from './api/auth';
 import { getRandomProblemForLanguage } from './api/randomProblem';
 import { showProblemWebView } from './ui/problemView';
 import { submitSolution } from './api/submit';
 import { SUPPORTED_LANGUAGES } from './config/languages';
+import { getPreferredLanguage, changeLanguage } from "./api/languageManager";
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -26,16 +29,42 @@ export function activate(context: vscode.ExtensionContext) {
 	const getRandom = vscode.commands.registerCommand(
 		"vscode-leetcode-plus.getRandomProblem",
 		async () => {
-			const problem = await getRandomProblemForLanguage(context);
+			const lang = await getPreferredLanguage(context);
+			const problem = await getRandomProblemForLanguage(lang, context);
+
 			if (!problem) return;
 
 			showProblemWebView(problem.title, problem.difficulty, problem.content);
 
-			const doc = await vscode.workspace.openTextDocument({
-				content: problem.code,
-				language: problem.lang === "python3" ? "python" : problem.lang,
-			});
+			// Create a filename based on slug + language extension
+			const fileExt = lang === "python3" ? "py"
+			: lang === "cpp" ? "cpp"
+			: lang === "java" ? "java"
+			: lang === "javascript" ? "js"
+			: lang === "typescript" ? "ts"
+			: "txt";
+
+			const fileName = `${problem.slug}.${fileExt}`;
+
+			// Use workspace folder (or temp folder if none)
+			let folderPath: string;
+			if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
+			folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+			} else {
+			folderPath = path.join(require("os").homedir(), "leetcode");
+			if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+			}
+
+			const filePath = path.join(folderPath, fileName);
+
+			// Write code to disk (overwrite if exists)
+			fs.writeFileSync(filePath, problem.code, { encoding: "utf-8" });
+
+			// Open it in the editor
+			const doc = await vscode.workspace.openTextDocument(filePath);
 			await vscode.window.showTextDocument(doc, vscode.ViewColumn.Two);
+
+			vscode.window.showInformationMessage(`📘 Opened ${fileName}`);
 		}
 	);
 

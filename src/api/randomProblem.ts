@@ -32,7 +32,7 @@ async function getSubmittableProblem(langSlug = "python3") {
 }
 
 
-export async function getRandomProblemForLanguage(context: vscode.ExtensionContext) {
+export async function getRandomProblemForLanguage(lang: string, context: vscode.ExtensionContext) {
   // Step 1: Check for saved preferred language
   let langSlug: any = context.globalState.get("preferredLanguage") as string | undefined;
 
