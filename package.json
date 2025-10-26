@@ -11,7 +11,8 @@
   ],
   "activationEvents": [
     "onCommand:vscode-leetcode-plus.helloWorld",
-    "onCommand:vscode-leetcode-plus.setSession"
+    "onCommand:vscode-leetcode-plus.setSession",
+    "onCommand:vscode-leetcode-plus.getRandomProblem"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -23,6 +24,10 @@
       {
         "command": "vscode-leetcode-plus.setSession",
         "title": "LeetCode Plus: Set Session Cookie"
+      },
+      {
+        "command": "vscode-leetcode-plus.getRandomProblem",
+        "title": "LeetCode Plus: Get Random Problem"
       }
     ]
   },
@@ -53,6 +58,7 @@
     "webpack-cli": "^6.0.1"
   },
   "dependencies": {
+    "axios": "^1.12.2",
     "node-fetch": "^2.7.0"
   }
 }

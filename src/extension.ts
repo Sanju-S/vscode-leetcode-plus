@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { setLeetCodeSession } from './api/auth';
+import { getRandomProblemForLanguage } from './api/randomProblem';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -18,7 +19,13 @@ export function activate(context: vscode.ExtensionContext) {
 		setLeetCodeSession(context)
 	);
 
-	context.subscriptions.push(hello, setSession);
+	// Get Random Problem
+	const getRandom = vscode.commands.registerCommand(
+		"vscode-leetcode-plus.getRandomProblem",
+		() => getRandomProblemForLanguage("python3")  // Default to Python3
+	);
+
+	context.subscriptions.push(hello, setSession, getRandom);
 }
 
 // This method is called when your extension is deactivated
