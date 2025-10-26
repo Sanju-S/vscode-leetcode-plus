@@ -12,7 +12,8 @@
   "activationEvents": [
     "onCommand:vscode-leetcode-plus.helloWorld",
     "onCommand:vscode-leetcode-plus.setSession",
-    "onCommand:vscode-leetcode-plus.getRandomProblem"
+    "onCommand:vscode-leetcode-plus.getRandomProblem",
+    "onCommand:vscode-leetcode-plus.submitSolution"
   ],
   "main": "./dist/extension.js",
   "contributes": {
@@ -28,6 +29,10 @@
       {
         "command": "vscode-leetcode-plus.getRandomProblem",
         "title": "LeetCode Plus: Get Random Problem"
+      },
+      {
+        "command": "vscode-leetcode-plus.submitSolution",
+        "title": "LeetCode Plus: Submit Solution"
       }
     ]
   },
