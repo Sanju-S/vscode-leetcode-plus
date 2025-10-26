@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { SUPPORTED_LANGUAGES } from "../config/languages";
 
 const LC_PROBLEM_LIST = "https://leetcode.com/api/problems/all/";
 const LC_GRAPHQL = "https://leetcode.com/graphql";
@@ -7,15 +8,15 @@ async function getSubmittableProblem(langSlug = "python3") {
   const listResponse = await fetch("https://leetcode.com/api/problems/all/");
   const listData: any = await listResponse.json();
 
-  // 1️⃣ Filter to only free problems
+  // Filter to only free problems
   const freeProblems = listData.stat_status_pairs.filter((p: any) => !p.paid_only);
 
-  // 2️⃣ Shuffle list to avoid repeats
+  // Shuffle list to avoid repeats
   for (let i = 0; i < 10; i++) {
     const random = freeProblems[Math.floor(Math.random() * freeProblems.length)];
     const titleSlug = random.stat.question__title_slug;
 
-    // 3️⃣ Check if submit is enabled
+    // Check if submit is enabled
     const submitCheck = await fetch(`https://leetcode.com/problems/${titleSlug}/submit/`, {
       method: "OPTIONS",
     });
@@ -31,18 +32,44 @@ async function getSubmittableProblem(langSlug = "python3") {
 }
 
 
-export async function getRandomProblemForLanguage(langSlug = "python3", context?: vscode.ExtensionContext) {
-  vscode.window.showInformationMessage("🔍 Fetching a random problem...");
+export async function getRandomProblemForLanguage(context: vscode.ExtensionContext) {
+  // Step 1: Check for saved preferred language
+  let langSlug: any = context.globalState.get("preferredLanguage") as string | undefined;
 
-  // Get a submittable problem slug
-  const titleSlug = await getSubmittableProblem(langSlug);
+  // Step 2: If not found, ask the user
+  if (!langSlug) {
+    const selection = await vscode.window.showQuickPick(
+      SUPPORTED_LANGUAGES.map((l) => l.label),
+      {
+        placeHolder: "Select your preferred programming language",
+        ignoreFocusOut: true,
+      }
+    );
+
+    if (!selection) {
+      vscode.window.showWarningMessage("No language selected — cancelling request.");
+      return;
+    }
+
+    const chosen = SUPPORTED_LANGUAGES.find((l) => l.label === selection);
+    if (!chosen) return;
+
+    langSlug = chosen.slug;
+    await context.globalState.update("preferredLanguage", langSlug);
+    vscode.window.showInformationMessage(`🌐 Language set to ${selection}.`);
+  }
+
+  vscode.window.showInformationMessage(`🎯 Fetching a random problem for ${langSlug}...`);
+
+  // Step 3: Fetch a submittable problem
+  const titleSlug = await getSubmittableProblem();
   if (!titleSlug) {
     vscode.window.showErrorMessage("❌ Could not find any submittable problems.");
     return;
   }
 
-  // Fetch full problem details via GraphQL
-  const detailResponse = await fetch("https://leetcode.com/graphql", {
+  // Step 4: Fetch details from GraphQL
+  const detailResponse = await fetch(LC_GRAPHQL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -69,26 +96,22 @@ export async function getRandomProblemForLanguage(langSlug = "python3", context?
   const detailData: any = await detailResponse.json();
   const question = detailData.data.question;
 
-  if (!question) {
-    vscode.window.showErrorMessage("❌ Failed to load problem details.");
-    return;
-  }
-
   const snippet = question.codeSnippets.find(
     (s: any) => s.langSlug.toLowerCase() === langSlug.toLowerCase()
   );
 
-  if (context) {
-    context.globalState.update("lastQuestionSlug", question.titleSlug);
-    context.globalState.update("lastQuestionLang", langSlug);
-  }
+  // Save the last problem data
+  context.globalState.update("lastQuestionSlug", question.titleSlug);
+  context.globalState.update("lastQuestionId", question.questionId);
+  context.globalState.update("lastQuestionLang", langSlug);
 
   return {
-    id: question.questionId,
     title: question.title,
     slug: question.titleSlug,
+    id: question.questionId,
     difficulty: question.difficulty,
     content: question.content,
     code: snippet ? snippet.code : "# No starter code available.",
+    lang: langSlug,
   };
 }

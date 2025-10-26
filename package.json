@@ -33,8 +33,36 @@
       {
         "command": "vscode-leetcode-plus.submitSolution",
         "title": "LeetCode Plus: Submit Solution"
+      },
+      {
+        "command": "vscode-leetcode-plus.changeLanguage",
+        "title": "LeetCode Plus: Change Preferred Language"
       }
-    ]
+    ],
+    "keybindings": [
+      {
+        "command": "vscode-leetcode-plus.getRandomProblem",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+alt+l",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "vscode-leetcode-plus.submitSolution",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "editorTextFocus"
+      },
+      {
+        "command": "vscode-leetcode-plus.setSession",
+        "key": "ctrl+alt+c",
+        "mac": "cmd+alt+c"
+      },
+      {
+        "command": "vscode-leetcode-plus.changeLanguage",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p"
+      }
+  ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

@@ -5,6 +5,7 @@ import { setLeetCodeSession } from './api/auth';
 import { getRandomProblemForLanguage } from './api/randomProblem';
 import { showProblemWebView } from './ui/problemView';
 import { submitSolution } from './api/submit';
+import { SUPPORTED_LANGUAGES } from './config/languages';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -23,24 +24,36 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Fetch random problem
 	const getRandom = vscode.commands.registerCommand(
-	"vscode-leetcode-plus.getRandomProblem",
-	async () => {
-			const problem = await getRandomProblemForLanguage("python3", context);
-
+		"vscode-leetcode-plus.getRandomProblem",
+		async () => {
+			const problem = await getRandomProblemForLanguage(context);
 			if (!problem) return;
-
-			// Save the problem ID for later submission
-			context.globalState.update("lastQuestionId", problem.id);
-			context.globalState.update("lastQuestionSlug", problem.slug);
-			context.globalState.update("lastQuestionLang", "python3");
 
 			showProblemWebView(problem.title, problem.difficulty, problem.content);
 
 			const doc = await vscode.workspace.openTextDocument({
-			content: problem.code,
-			language: "python",
+				content: problem.code,
+				language: problem.lang === "python3" ? "python" : problem.lang,
 			});
 			await vscode.window.showTextDocument(doc, vscode.ViewColumn.Two);
+		}
+	);
+
+	// Change preferred language
+	const changeLang = vscode.commands.registerCommand(
+		"vscode-leetcode-plus.changeLanguage",
+		async () => {
+			const selection = await vscode.window.showQuickPick(
+				SUPPORTED_LANGUAGES.map((l) => l.label),
+				{ placeHolder: "Select your new preferred language" }
+			);
+
+			if (!selection) return;
+			const chosen = SUPPORTED_LANGUAGES.find((l) => l.label === selection);
+			if (!chosen) return;
+
+			await context.globalState.update("preferredLanguage", chosen.slug);
+			vscode.window.showInformationMessage(`✅ Preferred language updated to ${selection}.`);
 		}
 	);
 
@@ -68,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
-	context.subscriptions.push(hello, setSession, getRandom, submit);
+	context.subscriptions.push(hello, setSession, getRandom, submit, changeLang);
 }
 
 // This method is called when your extension is deactivated
