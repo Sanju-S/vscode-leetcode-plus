@@ -9,7 +9,7 @@ import { showProblemWebView } from './ui/problemView';
 import { submitSolution } from './api/submit';
 import { SUPPORTED_LANGUAGES } from './config/languages';
 import { getPreferredLanguage, changeLanguage } from "./api/languageManager";
-import { changeDifficulty } from './api/difficultyManager';
+import { changeDifficulty, getPreferredDifficulty } from './api/difficultyManager';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -31,11 +31,12 @@ export function activate(context: vscode.ExtensionContext) {
 		"vscode-leetcode-plus.getRandomProblem",
 		async () => {
 			const lang = await getPreferredLanguage(context);
+			const diffPref = await getPreferredDifficulty(context);
 			const problem = await getRandomProblemForLanguage(context);
 
-			if (!problem) return;
+			if (!problem) {return;}
 
-			showProblemWebView(problem.title, problem.difficulty, problem.content);
+			showProblemWebView(problem.title, problem.difficulty, problem.content, lang, diffPref);
 
 			// Create a filename based on slug + language extension
 			const fileExt = lang === "python3" ? "py"
@@ -110,9 +111,9 @@ export function activate(context: vscode.ExtensionContext) {
 				{ placeHolder: "Select your new preferred language" }
 			);
 
-			if (!selection) return;
+			if (!selection) {return;}
 			const chosen = SUPPORTED_LANGUAGES.find((l) => l.label === selection);
-			if (!chosen) return;
+			if (!chosen) {return;}
 
 			await context.globalState.update("preferredLanguage", chosen.slug);
 			vscode.window.showInformationMessage(`✅ Preferred language updated to ${selection}.`);

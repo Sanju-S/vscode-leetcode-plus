@@ -23,12 +23,12 @@ async function getSubmittableProblem(context: vscode.ExtensionContext) {
   let filteredProblems = freeProblems;
 
   const allowedDiffs: string[] = [];
-  if (difficultyPref === "Easy") allowedDiffs.push("Easy");
-  else if (difficultyPref === "Medium") allowedDiffs.push("Medium");
-  else if (difficultyPref === "Hard") allowedDiffs.push("Hard");
-  else if (difficultyPref === "Random (Easy, Medium)") allowedDiffs.push("Easy", "Medium");
-  else if (difficultyPref === "Random (Medium, Hard)") allowedDiffs.push("Medium", "Hard");
-  else allowedDiffs.push("Easy", "Medium", "Hard"); // Random (Easy, Medium, Hard)
+  if (difficultyPref === "Easy") {allowedDiffs.push("Easy");}
+  else if (difficultyPref === "Medium") {allowedDiffs.push("Medium");}
+  else if (difficultyPref === "Hard") {allowedDiffs.push("Hard");}
+  else if (difficultyPref === "Random (Easy, Medium)") {allowedDiffs.push("Easy", "Medium");}
+  else if (difficultyPref === "Random (Medium, Hard)") {allowedDiffs.push("Medium", "Hard");}
+  else {allowedDiffs.push("Easy", "Medium", "Hard");} // Random (Easy, Medium, Hard)
 
   filteredProblems = freeProblems.filter((p: any) =>
     allowedDiffs.includes(getDiffLabel(p.difficulty.level))
@@ -75,7 +75,7 @@ export async function getRandomProblemForLanguage(context: vscode.ExtensionConte
     }
 
     const chosen = SUPPORTED_LANGUAGES.find((l) => l.label === selection);
-    if (!chosen) return;
+    if (!chosen) {return;}
 
     langSlug = chosen.slug;
     await context.globalState.update("preferredLanguage", langSlug);

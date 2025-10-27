@@ -88,7 +88,7 @@ export async function submitSolution(
         false
       );
 
-      if (result.state !== "PENDING" && result.state !== "STARTED") break;
+      if (result.state !== "PENDING" && result.state !== "STARTED") {break;}
     }
 
     // Final update

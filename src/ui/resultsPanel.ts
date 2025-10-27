@@ -107,7 +107,7 @@ export function updateResultsPanel(result: SubmissionResult, isFinal: boolean) {
 }
 
 function escapeHtml(text?: string): string {
-  if (!text) return "";
+  if (!text) {return "";}
   return text
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

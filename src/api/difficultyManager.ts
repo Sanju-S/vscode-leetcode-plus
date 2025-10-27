@@ -34,7 +34,7 @@ export async function pickAndSaveDifficulty(context: vscode.ExtensionContext): P
  */
 export async function getPreferredDifficulty(context: vscode.ExtensionContext): Promise<string> {
   let diff = context.globalState.get(DIFF_KEY) as string | undefined;
-  if (!diff) diff = await pickAndSaveDifficulty(context);
+  if (!diff) {diff = await pickAndSaveDifficulty(context);}
   return diff ?? "Random (Easy, Medium, Hard)";
 }
 
