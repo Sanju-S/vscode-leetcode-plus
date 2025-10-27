@@ -77,3 +77,64 @@ This extension contributes the following settings:
 
 Example after fetching a few problems:
 
+workspace/
+├── Easy/
+│ └── two-sum.py
+├── Medium/
+│ └── add-two-numbers.py
+├── Hard/
+│ └── trapping-rain-water.cpp
+
+
+
+Each file is auto-saved with starter code and ready to run.
+
+---
+
+## 🧩 Known Issues
+
+- Some **premium problems** cannot be fetched (API restricted by LeetCode).  
+- WebView might not show images correctly if offline.  
+- Ensure your cookies are valid — expired sessions will cause “Submission failed” errors.
+
+---
+
+## 🧾 Release Notes
+
+### 1.0.0 – First Public Release
+✅ Core features implemented:
+- Problem fetch with language & difficulty preferences  
+- WebView problem renderer  
+- Auto-saved workspace files  
+- Live submission + result panel  
+- Cookie-based authentication  
+- Configurable shortcuts  
+
+---
+
+## 💡 Roadmap (Upcoming Features)
+
+- 🪄 Clickable tags in WebView to change language/difficulty instantly  
+- 🧩 Sidebar Problem Tree View (browse solved problems)  
+- 🧠 AI hints and solution explanations  
+- 💾 Problem history + notes tracking  
+- 🕹 Interview Practice Mode with timer and progress stats  
+
+---
+
+## 🧠 Contributing
+
+We welcome feedback, ideas, and pull requests!  
+If you’d like to improve or add features, open an issue or PR on GitHub:
+
+👉 [https://github.com/prince-levis/vscode-leetcode-plus](https://github.com/prince-levis/vscode-leetcode-plus)
+
+---
+
+## 🧾 License
+
+This project is licensed under the **MIT License** — free to use, modify, and distribute.
+
+---
+
+**Enjoy solving problems without leaving VS Code! 🚀**
