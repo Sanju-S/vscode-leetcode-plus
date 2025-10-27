@@ -1,19 +1,42 @@
 import * as vscode from "vscode";
 import { SUPPORTED_LANGUAGES } from "../config/languages";
+import { getPreferredDifficulty } from "./difficultyManager";
+
 
 const LC_PROBLEM_LIST = "https://leetcode.com/api/problems/all/";
 const LC_GRAPHQL = "https://leetcode.com/graphql";
 
-async function getSubmittableProblem(langSlug = "python3") {
-  const listResponse = await fetch("https://leetcode.com/api/problems/all/");
+async function getSubmittableProblem(context: vscode.ExtensionContext) {
+  const listResponse = await fetch(LC_PROBLEM_LIST);
   const listData: any = await listResponse.json();
 
   // Filter to only free problems
   const freeProblems = listData.stat_status_pairs.filter((p: any) => !p.paid_only);
 
+  // 🧩 Get user’s preferred difficulty
+  const difficultyPref = context ? await getPreferredDifficulty(context) : "Random (Easy, Medium, Hard)";
+  
+  // 🧠 Helper to map difficulty level
+  const getDiffLabel = (level: number) => (level === 1 ? "Easy" : level === 2 ? "Medium" : "Hard");
+
+  // 🎯 Filter problems based on user preference
+  let filteredProblems = freeProblems;
+
+  const allowedDiffs: string[] = [];
+  if (difficultyPref === "Easy") allowedDiffs.push("Easy");
+  else if (difficultyPref === "Medium") allowedDiffs.push("Medium");
+  else if (difficultyPref === "Hard") allowedDiffs.push("Hard");
+  else if (difficultyPref === "Random (Easy, Medium)") allowedDiffs.push("Easy", "Medium");
+  else if (difficultyPref === "Random (Medium, Hard)") allowedDiffs.push("Medium", "Hard");
+  else allowedDiffs.push("Easy", "Medium", "Hard"); // Random (Easy, Medium, Hard)
+
+  filteredProblems = freeProblems.filter((p: any) =>
+    allowedDiffs.includes(getDiffLabel(p.difficulty.level))
+  );
+
   // Shuffle list to avoid repeats
   for (let i = 0; i < 10; i++) {
-    const random = freeProblems[Math.floor(Math.random() * freeProblems.length)];
+    const random = filteredProblems[Math.floor(Math.random() * filteredProblems.length)];
     const titleSlug = random.stat.question__title_slug;
 
     // Check if submit is enabled
@@ -32,7 +55,7 @@ async function getSubmittableProblem(langSlug = "python3") {
 }
 
 
-export async function getRandomProblemForLanguage(lang: string, context: vscode.ExtensionContext) {
+export async function getRandomProblemForLanguage(context: vscode.ExtensionContext) {
   // Step 1: Check for saved preferred language
   let langSlug: any = context.globalState.get("preferredLanguage") as string | undefined;
 
@@ -62,7 +85,7 @@ export async function getRandomProblemForLanguage(lang: string, context: vscode.
   vscode.window.showInformationMessage(`🎯 Fetching a random problem for ${langSlug}...`);
 
   // Step 3: Fetch a submittable problem
-  const titleSlug = await getSubmittableProblem();
+  const titleSlug = await getSubmittableProblem(context);
   if (!titleSlug) {
     vscode.window.showErrorMessage("❌ Could not find any submittable problems.");
     return;
@@ -95,6 +118,11 @@ export async function getRandomProblemForLanguage(lang: string, context: vscode.
 
   const detailData: any = await detailResponse.json();
   const question = detailData.data.question;
+
+  if (!question) {
+    vscode.window.showErrorMessage("❌ Failed to load problem details.");
+    return;
+  }
 
   const snippet = question.codeSnippets.find(
     (s: any) => s.langSlug.toLowerCase() === langSlug.toLowerCase()

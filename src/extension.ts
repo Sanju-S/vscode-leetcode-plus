@@ -9,6 +9,7 @@ import { showProblemWebView } from './ui/problemView';
 import { submitSolution } from './api/submit';
 import { SUPPORTED_LANGUAGES } from './config/languages';
 import { getPreferredLanguage, changeLanguage } from "./api/languageManager";
+import { changeDifficulty } from './api/difficultyManager';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -30,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 		"vscode-leetcode-plus.getRandomProblem",
 		async () => {
 			const lang = await getPreferredLanguage(context);
-			const problem = await getRandomProblemForLanguage(lang, context);
+			const problem = await getRandomProblemForLanguage(context);
 
 			if (!problem) return;
 
@@ -142,7 +143,15 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
-	context.subscriptions.push(hello, setSession, getRandom, submit, changeLang);
+	const updateDifficulty = vscode.commands.registerCommand(
+	"vscode-leetcode-plus.changeDifficulty",
+	async () => {
+		await changeDifficulty(context);
+	}
+	);
+
+
+	context.subscriptions.push(hello, setSession, getRandom, submit, changeLang, updateDifficulty);
 }
 
 // This method is called when your extension is deactivated

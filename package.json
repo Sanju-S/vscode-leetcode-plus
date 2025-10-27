@@ -37,6 +37,10 @@
       {
         "command": "vscode-leetcode-plus.changeLanguage",
         "title": "LeetCode Plus: Change Preferred Language"
+      },
+      {
+        "command": "vscode-leetcode-plus.changeDifficulty",
+        "title": "LeetCode Plus: Change Preferred Difficulty"
       }
     ],
     "keybindings": [

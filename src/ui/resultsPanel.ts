@@ -14,7 +14,7 @@ export interface SubmissionResult {
 let panel: vscode.WebviewPanel | undefined;
 
 /**
- * Opens or updates the Results Panel.
+ * Creates or updates the live Results Panel.
  */
 export function updateResultsPanel(result: SubmissionResult, isFinal: boolean) {
   if (!panel) {
@@ -33,7 +33,7 @@ export function updateResultsPanel(result: SubmissionResult, isFinal: boolean) {
   const style = `
     <style>
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
         padding: 20px;
         color: var(--vscode-editor-foreground);
         background: var(--vscode-editor-background);
@@ -49,6 +49,11 @@ export function updateResultsPanel(result: SubmissionResult, isFinal: boolean) {
         border-radius: 6px;
         overflow-x: auto;
       }
+      .section { margin-top: 15px; }
+      .label {
+        font-weight: bold;
+        color: var(--vscode-editor-foreground);
+      }
     </style>
   `;
 
@@ -62,6 +67,18 @@ export function updateResultsPanel(result: SubmissionResult, isFinal: boolean) {
       ? "pending"
       : "info";
 
+  const testCaseSection =
+    result.input || result.expected_output || result.code_output
+      ? `
+      <div class="section">
+        <h3>🧪 Test Case Info</h3>
+        ${result.input ? `<p class="label">Input:</p><pre>${escapeHtml(result.input)}</pre>` : ""}
+        ${result.expected_output ? `<p class="label">Expected Output:</p><pre>${escapeHtml(result.expected_output)}</pre>` : ""}
+        ${result.code_output ? `<p class="label">Your Output:</p><pre>${escapeHtml(result.code_output)}</pre>` : ""}
+      </div>
+    `
+      : "";
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -71,34 +88,28 @@ export function updateResultsPanel(result: SubmissionResult, isFinal: boolean) {
         <p><b>Runtime:</b> ${result.status_runtime || "?"}</p>
         <p><b>Memory:</b> ${result.status_memory || "?"}</p>
 
-        ${
-          result.code_output
-            ? `<h3>Your Output</h3><pre>${result.code_output}</pre>`
-            : ""
-        }
-        ${
-          result.expected_output
-            ? `<h3>Expected Output</h3><pre>${result.expected_output}</pre>`
-            : ""
-        }
+        ${testCaseSection}
+
         ${
           result.std_output
-            ? `<h3>Std Output</h3><pre>${result.std_output}</pre>`
+            ? `<div class="section"><h3>Console Output</h3><pre>${escapeHtml(result.std_output)}</pre></div>`
             : ""
         }
-        ${
-          result.input
-            ? `<h3>Input</h3><pre>${result.input}</pre>`
-            : ""
-        }
-        ${
-          !isFinal
-            ? `<p style="color:gray;">⏳ Refreshing automatically until result is final...</p>`
-            : `<p style="color:gray;">✅ Final result received.</p>`
-        }
+
+        <p style="color:gray;">
+          ${!isFinal ? "⏳ Refreshing until final result..." : "✅ Final result received."}
+        </p>
       </body>
     </html>
   `;
 
   panel.webview.html = html;
+}
+
+function escapeHtml(text?: string): string {
+  if (!text) return "";
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
