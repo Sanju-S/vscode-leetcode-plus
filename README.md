@@ -3,6 +3,7 @@
 LeetCode Plus lets you **fetch, solve, and submit LeetCode problems directly inside Visual Studio Code**, without leaving your editor.  
 It provides a fast, distraction-free, and customizable workflow for competitive programming and interview prep.
 
+![LeetCode Plus](icon.png)
 
 ---
 
