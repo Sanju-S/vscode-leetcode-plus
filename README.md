@@ -77,6 +77,7 @@ This extension contributes the following settings:
 
 Example after fetching a few problems:
 
+`
 workspace/
 ├── Easy/
 │ └── two-sum.py
@@ -84,7 +85,7 @@ workspace/
 │ └── add-two-numbers.py
 ├── Hard/
 │ └── trapping-rain-water.cpp
-
+`
 
 
 Each file is auto-saved with starter code and ready to run.
@@ -127,7 +128,7 @@ Each file is auto-saved with starter code and ready to run.
 We welcome feedback, ideas, and pull requests!  
 If you’d like to improve or add features, open an issue or PR on GitHub:
 
-👉 [https://github.com/prince-levis/vscode-leetcode-plus](https://github.com/prince-levis/vscode-leetcode-plus)
+👉 [https://github.com/Sanju-S/vscode-leetcode-plus](https://github.com/Sanju-S/vscode-leetcode-plus)
 
 ---
 
