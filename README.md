@@ -1,71 +1,79 @@
-# vscode-leetcode-plus README
+# 🧩 LeetCode Plus — Solve LeetCode Inside VS Code
 
-This is the README for your extension "vscode-leetcode-plus". After writing up a brief description, we recommend including the following sections.
+LeetCode Plus lets you **fetch, solve, and submit LeetCode problems directly inside Visual Studio Code**, without leaving your editor.  
+It provides a fast, distraction-free, and customizable workflow for competitive programming and interview prep.
 
-## Features
-
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-## Extension Settings
-
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+<!-- ![LeetCode Plus](images/demo.png) -->
 
 ---
 
-## Following extension guidelines
+## ✨ Features
 
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
+### 🚀 Core Capabilities
+- 🔐 **Login via LeetCode Session Cookie** — securely authenticate once, and the extension remembers your session.
+- 🎯 **Fetch Random Problems** — instantly load a random problem directly in VS Code.
+- 🧠 **Difficulty Filters** — pick your preferred level:
+  - Easy / Medium / Hard  
+  - Random (Easy, Medium, Hard)  
+  - Random (Easy, Medium)  
+  - Random (Medium, Hard)
+- 💻 **Language Picker** — choose and save your preferred language (Python3, C++, Java, JavaScript, etc.).
+- 🧩 **WebView Problem Display** — see formatted problem descriptions, examples, and constraints in a beautiful VS Code web panel.
+- 🗂 **Automatic File Creation & Organization**
+  - Each fetched problem is saved automatically under `workspace/<Difficulty>/<slug>.<ext>`
+  - No need to manually save or name files.
+- ⚡ **Submit Code & Get Live Results**
+  - Submits code directly to LeetCode.
+  - Displays status, runtime, and memory usage.
+- 🧪 **Live Results Panel**
+  - Updates in real-time as your submission is evaluated.
+  - Shows input, expected output, and your output.
+- 🧭 **Persistent Preferences**
+  - Remembers your chosen **language** and **difficulty filter**.
+  - Fetches future problems based on your saved preferences.
+- 🧱 **Clean UI**
+  - Adaptive colors for light/dark themes.
+  - Tags showing current difficulty, language, and filters in the WebView header.
 
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+---
 
-## Working with Markdown
+## 🧰 Commands
 
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
+| Command | Description | Shortcut |
+|----------|-------------|-----------|
+| **LeetCode Plus: Get Random Problem** | Fetch a random problem (based on your saved language & difficulty) | `Ctrl + Alt + L` |
+| **LeetCode Plus: Submit Solution** | Submit your current file’s code to LeetCode | `Ctrl + Alt + S` |
+| **LeetCode Plus: Change Preferred Language** | Change your default coding language | `Ctrl + Alt + P` |
+| **LeetCode Plus: Change Preferred Difficulty** | Change your preferred problem difficulty | `Ctrl + Alt + D` |
+| **LeetCode Plus: Set Session Cookie** | Set your LeetCode login cookies for submission | `Ctrl + Alt + C` |
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
+---
 
-## For more information
+## ⚙️ Requirements
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+To use this extension:
+1. You must have a **LeetCode account**.
+2. Retrieve your **`LEETCODE_SESSION`** and **`csrftoken`** cookies from [leetcode.com](https://leetcode.com/).  
+   - Log in, open Developer Tools → Application → Cookies → Copy both values.
+3. Run the command `LeetCode Plus: Set Session Cookie` and paste them when prompted.
 
-**Enjoy!**
+### Optional
+- Install your language runtime (e.g., Python, C++, Java) to test locally.
+- A LeetCode Premium account is **not required** — only free problems are fetched.
+
+---
+
+## ⚙️ Extension Settings
+
+This extension contributes the following settings:
+
+| Setting | Default | Description |
+|----------|----------|-------------|
+| `leetcodePlus.autoSaveOnFetch` | `true` | Automatically saves files when a new problem is fetched. |
+
+---
+
+## 🧭 File Structure
+
+Example after fetching a few problems:
+

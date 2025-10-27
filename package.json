@@ -1,13 +1,14 @@
 {
   "name": "vscode-leetcode-plus",
   "displayName": "vscode-leetcode-plus",
-  "description": "Solve and submit LeetCode problems directly inside VS Code",
-  "version": "0.0.1",
+  "description": "Solve and submit LeetCode problems directly from VS Code — with language and difficulty filters, WebView, and live result panel.",
+  "version": "1.0.0",
+  "publisher": "sanju-sarkar",
   "engines": {
     "vscode": "^1.105.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages", "Education"
   ],
   "activationEvents": [
     "onCommand:vscode-leetcode-plus.helloWorld",
