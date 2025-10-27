@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { showResultsPanel, SubmissionResult } from "../ui/resultsPanel";
+import { updateResultsPanel, SubmissionResult } from "../ui/resultsPanel";
 
 export async function submitSolution(
   context: vscode.ExtensionContext,
@@ -29,7 +29,7 @@ export async function submitSolution(
         "x-csrftoken": csrftoken,
       },
       body: JSON.stringify({
-        question_id: questionId, // ✅ Added
+        question_id: questionId,
         lang: langSlug,
         typed_code: code,
       }),
@@ -54,8 +54,10 @@ export async function submitSolution(
 
     vscode.window.showInformationMessage(`🚀 Submitted! ID: ${submitData.submission_id}`);
 
-    // Poll for result
-    const checkUrl = `https://leetcode.com/submissions/detail/${submitData.submission_id}/check/`;
+    // After you get submitData.submission_id
+    const submissionId = submitData.submission_id;
+    const checkUrl = `https://leetcode.com/submissions/detail/${submissionId}/check/`;
+
     let result: any = null;
 
     for (let i = 0; i < 15; i++) {
@@ -68,28 +70,41 @@ export async function submitSolution(
         },
       });
 
-      const json: any = await checkResponse.json();
-      if (json.state !== "PENDING" && json.state !== "STARTED") {
-        result = json;
-        break;
-      }
+      const json = await checkResponse.json();
+      result = json;
+
+      // Update WebView each poll
+      updateResultsPanel(
+        {
+          status_msg: result.status_msg || result.state || "Waiting...",
+          status_runtime: result.status_runtime,
+          status_memory: result.status_memory,
+          code_output: result.code_output,
+          expected_output: result.expected_output,
+          std_output: result.std_output,
+          input: result.input,
+          state: result.state,
+        },
+        false
+      );
+
+      if (result.state !== "PENDING" && result.state !== "STARTED") break;
     }
 
-    if (!result) {
-      vscode.window.showWarningMessage("⚠️ Submission timed out.");
-      return;
-    }
-
-    const resultData: SubmissionResult = {
-    status_msg: result.status_msg,
-    status_runtime: result.status_runtime,
-    status_memory: result.status_memory,
-    input: result.input,
-    expected_output: result.expected_output,
-    code_output: result.code_output,
-    std_output: result.std_output,
-  };
-  showResultsPanel(resultData);
+    // Final update
+    updateResultsPanel(
+      {
+        status_msg: result.status_msg,
+        status_runtime: result.status_runtime,
+        status_memory: result.status_memory,
+        code_output: result.code_output,
+        expected_output: result.expected_output,
+        std_output: result.std_output,
+        input: result.input,
+        state: result.state,
+      },
+      true
+    );
   } catch (err: any) {
     vscode.window.showErrorMessage(`❌ Submission failed: ${err.message}`);
     console.error(err);
