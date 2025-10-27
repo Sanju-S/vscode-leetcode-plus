@@ -73,7 +73,13 @@ export function activate(context: vscode.ExtensionContext) {
 			const filePath = path.join(folderPath, fileName);
 
 			// Write file to disk (overwrite or create new)
+			if (!fs.existsSync(filePath)) {
 			fs.writeFileSync(filePath, problem.code, { encoding: "utf-8" });
+			} else {
+			vscode.window.showWarningMessage(
+				`${fileName} already exists — opening existing file.`
+			);
+			}
 
 			// Open in VS Code and auto-save
 			const doc = await vscode.workspace.openTextDocument(filePath);

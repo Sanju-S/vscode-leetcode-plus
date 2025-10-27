@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { showResultsPanel, SubmissionResult } from "../ui/resultsPanel";
 
 export async function submitSolution(
   context: vscode.ExtensionContext,
@@ -79,9 +80,16 @@ export async function submitSolution(
       return;
     }
 
-    vscode.window.showInformationMessage(
-      `💡 ${result.status_msg} | Runtime: ${result.status_runtime || "?"}, Memory: ${result.status_memory || "?"}`
-    );
+    const resultData: SubmissionResult = {
+    status_msg: result.status_msg,
+    status_runtime: result.status_runtime,
+    status_memory: result.status_memory,
+    input: result.input,
+    expected_output: result.expected_output,
+    code_output: result.code_output,
+    std_output: result.std_output,
+  };
+  showResultsPanel(resultData);
   } catch (err: any) {
     vscode.window.showErrorMessage(`❌ Submission failed: ${err.message}`);
     console.error(err);
