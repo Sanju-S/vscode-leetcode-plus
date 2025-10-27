@@ -2,7 +2,7 @@
   "name": "vscode-leetcode-plus",
   "displayName": "vscode-leetcode-plus",
   "description": "Solve and submit LeetCode problems directly from VS Code — with language and difficulty filters, WebView, and live result panel.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "sanju-sarkar",
   "license": "MIT",
   "icon": "icon.png",
