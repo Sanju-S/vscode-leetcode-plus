@@ -62,7 +62,17 @@
         "key": "ctrl+alt+p",
         "mac": "cmd+alt+p"
       }
-  ]
+    ],
+      "configuration": {
+      "title": "LeetCode Plus",
+      "properties": {
+        "leetcodePlus.autoSaveOnFetch": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically save fetched problems to disk."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",

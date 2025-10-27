@@ -44,27 +44,53 @@ export function activate(context: vscode.ExtensionContext) {
 			: lang === "typescript" ? "ts"
 			: "txt";
 
-			const fileName = `${problem.slug}.${fileExt}`;
+			// Prepare difficulty folder name
+			const difficulty =
+			problem.difficulty?.toLowerCase() || "unsorted"; // Easy, Medium, Hard
+			const folderName =
+			difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
 
-			// Use workspace folder (or temp folder if none)
-			let folderPath: string;
-			if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0) {
-			folderPath = vscode.workspace.workspaceFolders[0].uri.fsPath;
+			// Determine base workspace folder or fallback
+			let baseFolder: string;
+			if (
+			vscode.workspace.workspaceFolders &&
+			vscode.workspace.workspaceFolders.length > 0
+			) {
+			baseFolder = vscode.workspace.workspaceFolders[0].uri.fsPath;
 			} else {
-			folderPath = path.join(require("os").homedir(), "leetcode");
-			if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
+			baseFolder = path.join(require("os").homedir(), "leetcode");
+			if (!fs.existsSync(baseFolder)) {fs.mkdirSync(baseFolder);}
 			}
 
+			// Create difficulty subfolder if it doesn’t exist
+			const folderPath = path.join(baseFolder, folderName);
+			if (!fs.existsSync(folderPath)) {
+			fs.mkdirSync(folderPath, { recursive: true });
+			}
+
+			// Build file name and full path
+			const fileName = `${problem.slug}.${fileExt}`;
 			const filePath = path.join(folderPath, fileName);
 
-			// Write code to disk (overwrite if exists)
+			// Write file to disk (overwrite or create new)
 			fs.writeFileSync(filePath, problem.code, { encoding: "utf-8" });
 
-			// Open it in the editor
+			// Open in VS Code and auto-save
 			const doc = await vscode.workspace.openTextDocument(filePath);
-			await vscode.window.showTextDocument(doc, vscode.ViewColumn.Two);
+			const editor = await vscode.window.showTextDocument(
+			doc,
+			vscode.ViewColumn.Two
+			);
 
-			vscode.window.showInformationMessage(`📘 Opened ${fileName}`);
+			const autoSave = vscode.workspace
+			.getConfiguration("leetcodePlus")
+			.get("autoSaveOnFetch") as boolean;
+
+			if (autoSave) {await doc.save();}
+
+			vscode.window.showInformationMessage(
+			`📘 ${problem.title} (${problem.difficulty}) opened in ${folderName}/`
+			);
 		}
 	);
 
